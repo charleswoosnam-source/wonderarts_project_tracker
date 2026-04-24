@@ -1,0 +1,1114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#010d2d">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="WonderArts">
+<title>Wonder Arts · Project Tracker</title>
+
+<link rel="manifest" href="data:application/manifest+json;charset=utf-8,%7B%22name%22%3A%22Wonder%20Arts%20Project%20Tracker%22%2C%22short_name%22%3A%22WonderArts%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23010d2d%22%2C%22theme_color%22%3A%22%23010d2d%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Bxml%2C%253Csvg%2520xmlns%253D%2522http%253A%252F%252Fwww.w3.org%252F2000%252Fsvg%2522%2520viewBox%253D%25220%25200%2520192%2520192%2522%253E%253Crect%2520width%253D%2522192%2522%2520height%253D%2522192%2522%2520fill%253D%2522%2523010d2d%2522%252F%253E%253Ctext%2520x%253D%252296%2522%2520y%253D%2522118%2522%2520font-family%253D%2522sans-serif%2522%2520font-size%253D%252290%2522%2520font-weight%253D%2522900%2522%2520text-anchor%253D%2522middle%2522%2520fill%253D%2522%2523e42c72%2522%253Ew%253C%252Ftext%253E%253C%252Fsvg%253E%22%2C%22sizes%22%3A%22192x192%22%2C%22type%22%3A%22image%2Fsvg%2Bxml%22%7D%5D%7D">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --navy: #010d2d;
+    --navy-2: #0a1942;
+    --navy-3: #152456;
+    --pink: #e42c72;
+    --pink-hover: #ff4387;
+    --mint: #88dac0;
+    --mint-dark: #5fc4a3;
+    --yellow: #fbe63f;
+    --white: #ffffff;
+    --ghost: rgba(255,255,255,0.08);
+    --ghost-2: rgba(255,255,255,0.14);
+    --line: rgba(136,218,192,0.2);
+    --text: #e8ebf5;
+    --text-dim: rgba(232,235,245,0.65);
+    --text-faint: rgba(232,235,245,0.45);
+    --s-not: rgba(136,218,192,0.3);
+    --s-progress: #fbe63f;
+    --s-review: #88dac0;
+    --s-done: #5fc4a3;
+    --s-blocked: #e42c72;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html, body { background: var(--navy); color: var(--text); font-family: 'Nunito', sans-serif; min-height: 100vh; overflow-x: hidden; }
+  body { padding-bottom: env(safe-area-inset-bottom); position: relative; }
+  body::before {
+    content: ''; position: fixed; inset: 0;
+    background-image:
+      radial-gradient(1.5px 1.5px at 12% 18%, var(--mint) 50%, transparent 55%),
+      radial-gradient(1px 1px at 88% 22%, var(--pink) 50%, transparent 55%),
+      radial-gradient(1.5px 1.5px at 23% 78%, var(--yellow) 50%, transparent 55%),
+      radial-gradient(1px 1px at 75% 85%, var(--mint) 50%, transparent 55%),
+      radial-gradient(1px 1px at 55% 35%, var(--pink) 50%, transparent 55%),
+      radial-gradient(1.5px 1.5px at 92% 60%, var(--yellow) 50%, transparent 55%),
+      radial-gradient(1px 1px at 8% 55%, var(--mint) 50%, transparent 55%);
+    pointer-events: none; opacity: 0.7; z-index: 0;
+  }
+  body::after {
+    content: ''; position: fixed; bottom: -30px; left: 48%; width: 0; height: 0;
+    border-left: 60px solid transparent; border-right: 60px solid transparent;
+    border-bottom: 180px solid var(--yellow); opacity: 0.12; pointer-events: none; z-index: 0;
+  }
+  .app { position: relative; z-index: 1; min-height: 100vh; }
+  .header {
+    background: rgba(1,13,45,0.92); border-bottom: 1px solid var(--line);
+    padding: 20px 24px 16px; padding-top: calc(20px + env(safe-area-inset-top));
+    position: sticky; top: 0; z-index: 50; backdrop-filter: blur(10px);
+  }
+  .header-top { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+  .logo { font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 26px; letter-spacing: -0.04em; line-height: 1; }
+  .logo-wonder { color: var(--pink); }
+  .logo-arts { color: var(--mint); }
+  .header-actions { display: flex; gap: 8px; align-items: center; }
+  .icon-btn {
+    width: 40px; height: 40px; border-radius: 50%; background: var(--ghost);
+    border: 1px solid var(--line); color: var(--text); cursor: pointer;
+    display: flex; align-items: center; justify-content: center; font-size: 18px;
+    position: relative; transition: background 0.2s, transform 0.15s;
+  }
+  .icon-btn:hover { background: var(--ghost-2); transform: translateY(-1px); }
+  .icon-btn:active { transform: scale(0.95); }
+  .icon-btn .badge {
+    position: absolute; top: -4px; right: -4px; background: var(--pink); color: white;
+    font-size: 10px; font-weight: 800; min-width: 18px; height: 18px; border-radius: 100px;
+    padding: 0 5px; display: flex; align-items: center; justify-content: center; border: 2px solid var(--navy);
+  }
+  .tagline { font-family: 'Fraunces', serif; font-style: italic; color: var(--mint); font-size: 13px; margin-top: 6px; font-weight: 400; }
+  .tagline .wonder-word { color: var(--pink); font-weight: 600; }
+  .sync-status { font-size: 10px; color: var(--text-faint); margin-top: 4px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; }
+  .sync-status .dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--mint); margin-right: 6px; vertical-align: middle; }
+  .sync-status.offline .dot { background: var(--pink); }
+  .sync-status.syncing .dot { background: var(--yellow); animation: pulse 1s infinite; }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+  .hero { padding: 20px 24px; position: relative; }
+  .hero-title { font-weight: 900; font-size: clamp(28px, 8vw, 44px); letter-spacing: -0.04em; line-height: 0.95; margin-bottom: 4px; text-transform: uppercase; }
+  .hero-title .accent { color: var(--pink); }
+  .hero-sub { font-family: 'Fraunces', serif; font-style: italic; color: var(--mint); font-size: 15px; margin-bottom: 20px; }
+  .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; }
+  .stat-card { background: var(--navy-2); border: 1px solid var(--line); border-radius: 16px; padding: 16px; position: relative; overflow: hidden; }
+  .stat-card::after { content: ''; position: absolute; top: -20px; right: -20px; width: 60px; height: 60px; border-radius: 50%; opacity: 0.12; }
+  .stat-card.p::after { background: var(--pink); }
+  .stat-card.m::after { background: var(--mint); }
+  .stat-card.y::after { background: var(--yellow); }
+  .stat-card.b::after { background: var(--pink); }
+  .stat-num { font-size: 34px; font-weight: 900; letter-spacing: -0.03em; line-height: 1; color: var(--white); }
+  .stat-card.p .stat-num { color: var(--pink); }
+  .stat-card.m .stat-num { color: var(--mint); }
+  .stat-card.y .stat-num { color: var(--yellow); }
+  .stat-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.15em; color: var(--text-dim); margin-top: 8px; font-weight: 700; }
+  .tabs { display: flex; gap: 4px; padding: 0 24px; margin-top: 20px; border-bottom: 1px solid var(--line); overflow-x: auto; scrollbar-width: none; }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tab { padding: 12px 16px; background: none; border: none; color: var(--text-dim); font-family: inherit; font-size: 13px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; cursor: pointer; border-bottom: 2px solid transparent; transition: color 0.2s, border-color 0.2s; white-space: nowrap; display: flex; align-items: center; gap: 6px; }
+  .tab:hover { color: var(--text); }
+  .tab.active { color: var(--pink); border-bottom-color: var(--pink); }
+  .tab-badge { background: var(--pink); color: white; font-size: 10px; padding: 2px 6px; border-radius: 10px; font-weight: 800; }
+  .main { padding: 24px; max-width: 1200px; margin: 0 auto; }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; animation: fadeIn 0.3s; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  .filter-bar { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; align-items: center; }
+  .filter-chip { padding: 8px 14px; background: var(--ghost); border: 1px solid var(--line); border-radius: 100px; color: var(--text-dim); font-family: inherit; font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.2s; text-transform: uppercase; letter-spacing: 0.05em; }
+  .filter-chip:hover { color: var(--text); }
+  .filter-chip.active { background: var(--pink); color: white; border-color: var(--pink); }
+  .search-input { flex: 1; min-width: 200px; padding: 10px 16px; background: var(--ghost); border: 1px solid var(--line); border-radius: 100px; color: var(--text); font-family: inherit; font-size: 13px; }
+  .search-input::placeholder { color: var(--text-faint); }
+  .search-input:focus { outline: none; border-color: var(--pink); }
+  .project { background: var(--navy-2); border: 1px solid var(--line); border-radius: 20px; margin-bottom: 16px; overflow: hidden; transition: transform 0.2s, box-shadow 0.2s; }
+  .project:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(228,44,114,0.08); }
+  .project-header { padding: 20px; display: grid; grid-template-columns: auto 1fr auto; gap: 14px; align-items: center; cursor: pointer; }
+  .project-chevron { width: 32px; height: 32px; border-radius: 50%; background: var(--ghost); display: flex; align-items: center; justify-content: center; font-size: 14px; color: var(--mint); transition: transform 0.25s, background 0.2s; flex-shrink: 0; }
+  .project.expanded .project-chevron { transform: rotate(90deg); background: var(--pink); color: white; }
+  .project-info { min-width: 0; }
+  .project-title { font-weight: 800; font-size: 19px; letter-spacing: -0.02em; line-height: 1.2; color: var(--white); }
+  .project-meta { display: flex; gap: 12px; margin-top: 6px; font-size: 11px; color: var(--text-dim); flex-wrap: wrap; font-weight: 600; }
+  .project-meta span { display: flex; align-items: center; gap: 4px; }
+  .category-pill { background: rgba(251,230,63,0.15); color: var(--yellow); padding: 3px 10px; border-radius: 100px; font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 800; }
+  .progress-ring { position: relative; width: 52px; height: 52px; flex-shrink: 0; }
+  .progress-ring svg { transform: rotate(-90deg); }
+  .progress-ring-bg { fill: none; stroke: var(--ghost); stroke-width: 5; }
+  .progress-ring-fill { fill: none; stroke-width: 5; stroke-linecap: round; transition: stroke-dashoffset 0.6s ease; }
+  .progress-ring-text { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 13px; color: var(--white); }
+  .project-body { max-height: 0; overflow: hidden; transition: max-height 0.4s ease; }
+  .project.expanded .project-body { max-height: 5000px; }
+  .project-body-inner { padding: 0 20px 20px; border-top: 1px solid var(--line); padding-top: 20px; }
+  .project-desc { color: var(--text-dim); font-size: 14px; line-height: 1.6; margin-bottom: 20px; font-family: 'Fraunces', serif; }
+  .section-heading { font-weight: 800; font-size: 11px; text-transform: uppercase; letter-spacing: 0.15em; color: var(--mint); margin: 20px 0 12px; display: flex; justify-content: space-between; align-items: center; }
+  .timeline { background: var(--navy-3); border-radius: 12px; padding: 12px; overflow-x: auto; border: 1px solid var(--line); }
+  .timeline-scale { display: flex; height: 24px; border-bottom: 1px solid var(--line); margin-bottom: 8px; min-width: 600px; }
+  .timeline-month { flex: 1; text-align: center; font-size: 9px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-dim); font-weight: 800; border-right: 1px solid var(--line); padding-top: 6px; }
+  .timeline-tracks { position: relative; min-width: 600px; }
+  .timeline-today { position: absolute; top: 0; bottom: 0; width: 2px; background: var(--pink); z-index: 2; }
+  .timeline-today::before { content: ''; position: absolute; top: -6px; left: -5px; width: 12px; height: 12px; background: var(--pink); border-radius: 50%; box-shadow: 0 0 0 3px rgba(228,44,114,0.2); }
+  .timeline-track { position: relative; height: 30px; margin-bottom: 4px; display: flex; align-items: center; }
+  .timeline-bar { position: absolute; height: 22px; border-radius: 6px; padding: 0 10px; font-size: 10px; font-weight: 700; color: var(--navy); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; box-shadow: 0 2px 6px rgba(0,0,0,0.2); }
+  .timeline-bar.s-not { background: var(--s-not); color: var(--text); }
+  .timeline-bar.s-progress { background: var(--s-progress); }
+  .timeline-bar.s-review { background: var(--s-review); }
+  .timeline-bar.s-done { background: var(--s-done); color: var(--navy); }
+  .timeline-bar.s-blocked { background: var(--s-blocked); color: white; }
+  .timeline-empty { padding: 20px; text-align: center; color: var(--text-faint); font-size: 12px; font-style: italic; font-family: 'Fraunces', serif; }
+  .subtasks { display: flex; flex-direction: column; gap: 8px; }
+  .subtask { display: grid; grid-template-columns: auto 1fr auto auto auto; gap: 10px; align-items: center; padding: 12px 14px; background: var(--navy-3); border-radius: 10px; border-left: 3px solid var(--s-not); transition: background 0.2s; }
+  .subtask:hover { background: #1a2a5e; }
+  .subtask.s-progress { border-left-color: var(--s-progress); }
+  .subtask.s-review { border-left-color: var(--s-review); }
+  .subtask.s-done { border-left-color: var(--s-done); }
+  .subtask.s-blocked { border-left-color: var(--s-blocked); }
+  .subtask.s-done .subtask-title { text-decoration: line-through; opacity: 0.55; }
+  .subtask-check { width: 22px; height: 22px; border: 2px solid var(--line); border-radius: 6px; cursor: pointer; background: transparent; display: flex; align-items: center; justify-content: center; color: var(--navy); font-size: 14px; font-weight: 900; flex-shrink: 0; transition: all 0.2s; }
+  .subtask.s-done .subtask-check { background: var(--s-done); border-color: var(--s-done); }
+  .subtask-title { font-size: 14px; font-weight: 600; color: var(--white); }
+  .subtask-assignee { font-size: 10px; color: var(--mint); padding: 3px 8px; background: rgba(136,218,192,0.1); border-radius: 100px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
+  .subtask-dates { font-size: 10px; color: var(--text-dim); font-variant-numeric: tabular-nums; font-weight: 600; }
+  .subtask-status { font-size: 10px; font-weight: 800; padding: 5px 11px; border-radius: 100px; text-transform: uppercase; letter-spacing: 0.05em; background: transparent; border: 1px solid var(--line); cursor: pointer; color: var(--text); font-family: inherit; transition: all 0.2s; }
+  .subtask-status:hover { background: var(--ghost); }
+  .empty-subtasks { text-align: center; padding: 24px; color: var(--text-faint); font-size: 13px; font-family: 'Fraunces', serif; font-style: italic; }
+  .notes-area { background: var(--navy-3); border: 1px solid var(--line); border-radius: 12px; padding: 14px; }
+  .notes-textarea { width: 100%; min-height: 70px; background: transparent; border: none; color: var(--text); font: inherit; font-size: 14px; resize: vertical; line-height: 1.6; }
+  .notes-textarea:focus { outline: none; }
+  .notes-textarea::placeholder { color: var(--text-faint); font-style: italic; font-family: 'Fraunces', serif; }
+  .notes-meta { font-size: 11px; color: var(--text-faint); margin-top: 8px; font-style: italic; font-family: 'Fraunces', serif; padding-top: 8px; border-top: 1px dashed var(--line); }
+  .attachments { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 8px; margin-top: 8px; }
+  .attachment { position: relative; aspect-ratio: 1; border-radius: 10px; overflow: hidden; background: var(--navy-3); border: 1px solid var(--line); cursor: pointer; }
+  .attachment img { width: 100%; height: 100%; object-fit: cover; }
+  .attachment-label { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(1,13,45,0.9), transparent); padding: 16px 8px 6px; font-size: 10px; color: white; font-weight: 700; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .attachment-delete { position: absolute; top: 4px; right: 4px; width: 22px; height: 22px; border-radius: 50%; background: rgba(1,13,45,0.8); color: white; border: none; cursor: pointer; font-size: 14px; display: none; }
+  .attachment:hover .attachment-delete { display: flex; align-items: center; justify-content: center; }
+  .add-attachment { aspect-ratio: 1; border-radius: 10px; background: var(--navy-3); border: 2px dashed var(--line); color: var(--mint); cursor: pointer; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 4px; font-size: 11px; font-weight: 700; font-family: inherit; text-transform: uppercase; letter-spacing: 0.05em; transition: all 0.2s; }
+  .add-attachment:hover { border-color: var(--pink); color: var(--pink); background: rgba(228,44,114,0.05); }
+  .add-attachment span:first-child { font-size: 24px; }
+  .btn { font: inherit; font-weight: 800; border: none; border-radius: 100px; cursor: pointer; padding: 12px 22px; font-size: 13px; letter-spacing: 0.04em; text-transform: uppercase; transition: all 0.2s; display: inline-flex; align-items: center; gap: 8px; }
+  .btn-primary { background: var(--pink); color: white; }
+  .btn-primary:hover { background: var(--pink-hover); transform: translateY(-2px); box-shadow: 0 8px 20px rgba(228,44,114,0.3); }
+  .btn-ghost { background: var(--ghost); color: var(--text); border: 1px solid var(--line); }
+  .btn-ghost:hover { background: var(--ghost-2); }
+  .btn-mint { background: var(--mint); color: var(--navy); }
+  .btn-mint:hover { background: var(--mint-dark); }
+  .btn-small { padding: 8px 14px; font-size: 11px; }
+  .btn-danger { background: transparent; color: var(--pink); border: 1px solid var(--pink); }
+  .btn-danger:hover { background: var(--pink); color: white; }
+  .fab { position: fixed; bottom: calc(24px + env(safe-area-inset-bottom)); right: 24px; width: 60px; height: 60px; border-radius: 50%; background: var(--pink); color: white; border: none; font-size: 28px; font-weight: 300; cursor: pointer; box-shadow: 0 10px 30px rgba(228,44,114,0.4); z-index: 40; transition: all 0.3s; display: flex; align-items: center; justify-content: center; }
+  .fab:hover { transform: scale(1.08) rotate(90deg); background: var(--pink-hover); }
+  .empty-state { text-align: center; padding: 60px 20px; }
+  .empty-state-icon { font-size: 64px; margin-bottom: 16px; display: inline-block; }
+  .empty-state h2 { font-size: 28px; font-weight: 900; color: var(--white); margin-bottom: 8px; letter-spacing: -0.02em; }
+  .empty-state h2 .accent { color: var(--pink); }
+  .empty-state p { color: var(--text-dim); font-family: 'Fraunces', serif; font-style: italic; font-size: 15px; margin-bottom: 20px; }
+  .project-footer-actions { display: flex; gap: 8px; margin-top: 16px; flex-wrap: wrap; padding-top: 14px; border-top: 1px dashed var(--line); }
+  .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+  .dash-card { background: var(--navy-2); border: 1px solid var(--line); border-radius: 16px; padding: 20px; }
+  .dash-card-title { font-weight: 800; font-size: 11px; text-transform: uppercase; letter-spacing: 0.15em; color: var(--mint); margin-bottom: 14px; }
+  .status-breakdown { display: flex; flex-direction: column; gap: 10px; }
+  .status-row { display: grid; grid-template-columns: 100px 1fr auto; gap: 10px; align-items: center; font-size: 12px; }
+  .status-row-label { font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; font-size: 11px; }
+  .status-row-bar { height: 8px; background: var(--navy-3); border-radius: 100px; overflow: hidden; position: relative; }
+  .status-row-fill { height: 100%; border-radius: 100px; transition: width 0.5s; }
+  .status-row-count { font-weight: 900; color: var(--white); font-size: 13px; }
+  .upcoming-list { display: flex; flex-direction: column; gap: 10px; }
+  .upcoming-item { padding: 10px 12px; background: var(--navy-3); border-radius: 8px; border-left: 3px solid var(--mint); font-size: 13px; }
+  .upcoming-item.overdue { border-left-color: var(--pink); }
+  .upcoming-item.soon { border-left-color: var(--yellow); }
+  .upcoming-title { font-weight: 700; color: var(--white); }
+  .upcoming-meta { font-size: 11px; color: var(--text-dim); margin-top: 2px; }
+  .activity-list { display: flex; flex-direction: column; gap: 8px; }
+  .activity-item { padding: 14px 16px; background: var(--navy-2); border: 1px solid var(--line); border-radius: 12px; display: grid; grid-template-columns: auto 1fr auto; gap: 12px; align-items: center; transition: background 0.2s; }
+  .activity-item.unread { background: rgba(228,44,114,0.08); border-color: var(--pink); }
+  .activity-avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--pink); color: white; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 14px; text-transform: uppercase; }
+  .activity-content { font-size: 13px; color: var(--text); line-height: 1.4; }
+  .activity-actor { font-weight: 800; color: var(--white); }
+  .activity-action { color: var(--text-dim); }
+  .activity-target { color: var(--mint); font-weight: 700; }
+  .activity-time { font-size: 11px; color: var(--text-faint); font-weight: 600; white-space: nowrap; }
+  .activity-unread-dot { width: 8px; height: 8px; background: var(--pink); border-radius: 50%; flex-shrink: 0; }
+  .modal-backdrop { position: fixed; inset: 0; background: rgba(1,13,45,0.75); backdrop-filter: blur(10px); display: none; align-items: flex-end; justify-content: center; z-index: 200; padding: 0; }
+  .modal-backdrop.show { display: flex; animation: fadeIn 0.2s; }
+  @media (min-width: 640px) { .modal-backdrop { align-items: center; padding: 20px; } }
+  .modal { background: var(--navy-2); border: 1px solid var(--line); border-radius: 24px 24px 0 0; padding: 28px 24px; padding-bottom: calc(28px + env(safe-area-inset-bottom)); max-width: 540px; width: 100%; max-height: 90vh; overflow-y: auto; box-shadow: 0 -20px 60px rgba(0,0,0,0.5); animation: slideUp 0.3s; }
+  @media (min-width: 640px) { .modal { border-radius: 24px; padding-bottom: 28px; animation: scaleIn 0.25s; } }
+  @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+  @keyframes scaleIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  .modal h2 { font-size: 24px; font-weight: 900; color: var(--white); letter-spacing: -0.02em; margin-bottom: 4px; }
+  .modal h2 .accent { color: var(--pink); }
+  .modal-sub { font-family: 'Fraunces', serif; font-style: italic; color: var(--mint); font-size: 14px; margin-bottom: 20px; }
+  .form-group { margin-bottom: 14px; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .form-group label { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 800; color: var(--mint); margin-bottom: 6px; }
+  .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 12px 14px; border: 1px solid var(--line); border-radius: 10px; background: var(--navy-3); font: inherit; font-size: 14px; color: var(--text); }
+  .form-group input:focus, .form-group textarea:focus, .form-group select:focus { outline: none; border-color: var(--pink); }
+  .form-group textarea { resize: vertical; min-height: 80px; font-family: 'Fraunces', serif; }
+  .form-tabs { display: flex; gap: 4px; background: var(--navy-3); padding: 3px; border-radius: 10px; margin-bottom: 10px; }
+  .form-tab { flex: 1; padding: 8px; background: none; border: none; color: var(--text-dim); font: inherit; font-size: 12px; font-weight: 700; cursor: pointer; border-radius: 8px; transition: all 0.2s; }
+  .form-tab.active { background: var(--pink); color: white; }
+  .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
+  .toast { position: fixed; bottom: calc(100px + env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%) translateY(20px); background: var(--pink); color: white; padding: 12px 22px; border-radius: 100px; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; opacity: 0; transition: opacity 0.3s, transform 0.3s; z-index: 500; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .user-pill { display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: var(--ghost); border: 1px solid var(--line); border-radius: 100px; font-size: 12px; font-weight: 700; }
+  .user-pill input { background: transparent; border: none; outline: none; font: inherit; width: 90px; color: var(--white); }
+  .user-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--mint); box-shadow: 0 0 0 3px rgba(136,218,192,0.2); }
+  .loading-screen { position: fixed; inset: 0; background: var(--navy); display: flex; align-items: center; justify-content: center; z-index: 9999; flex-direction: column; gap: 20px; }
+  .loading-screen.hide { opacity: 0; pointer-events: none; transition: opacity 0.5s; }
+  .loading-logo { font-size: 36px; font-weight: 900; letter-spacing: -0.04em; }
+  .loading-spinner { width: 40px; height: 40px; border: 3px solid var(--line); border-top-color: var(--pink); border-radius: 50%; animation: spin 0.8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-status { font-family: 'Fraunces', serif; font-style: italic; color: var(--mint); font-size: 14px; }
+  @media print {
+    body::before, body::after { display: none; }
+    .header, .fab, .tabs, .filter-bar, .btn, .modal-backdrop, .toast, .project-footer-actions { display: none !important; }
+    .project { break-inside: avoid; border: 1px solid #ccc; background: white; color: black; margin-bottom: 12px; page-break-inside: avoid; }
+    .project.expanded .project-body { max-height: none; }
+    body { background: white; color: black; }
+    .project-title, .subtask-title, .stat-num { color: black !important; }
+    .project-desc, .notes-textarea { color: #333 !important; }
+  }
+  @media (max-width: 640px) {
+    .subtask { grid-template-columns: auto 1fr auto auto; gap: 8px; font-size: 12px; }
+    .subtask-dates { display: none; }
+    .form-row { grid-template-columns: 1fr; }
+    .project-header { grid-template-columns: auto 1fr auto; }
+    .hero-title { font-size: 32px; }
+    .user-pill input { width: 70px; }
+  }
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--navy); }
+  ::-webkit-scrollbar-thumb { background: var(--line); border-radius: 10px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--mint); }
+</style>
+</head>
+<body>
+
+<div class="loading-screen" id="loadingScreen">
+  <div class="loading-logo"><span style="color:#e42c72">wonder</span><span style="color:#88dac0">arts</span></div>
+  <div class="loading-spinner"></div>
+  <div class="loading-status" id="loadingStatus">Connecting to the cloud...</div>
+</div>
+
+<div class="app">
+<header class="header">
+  <div class="header-top">
+    <div>
+      <div class="logo"><span class="logo-wonder">wonder</span><span class="logo-arts">arts</span></div>
+      <div class="tagline">Where <span class="wonder-word">wonderful</span> projects take shape.</div>
+      <div class="sync-status syncing" id="syncStatus"><span class="dot"></span><span id="syncText">Connecting...</span></div>
+    </div>
+    <div class="header-actions">
+      <div class="user-pill">
+        <div class="user-dot"></div>
+        <input type="text" id="userName" placeholder="Your name">
+      </div>
+      <button class="icon-btn" onclick="showActivity()" title="Activity feed">
+        🔔
+        <span class="badge" id="unreadBadge" style="display:none">0</span>
+      </button>
+      <button class="icon-btn" onclick="exportPDF()" title="Export / Print">🖨</button>
+    </div>
+  </div>
+</header>
+
+<section class="hero">
+  <h1 class="hero-title"><span class="accent">Project</span><br>Tracker</h1>
+  <div class="hero-sub">Creativity for everyone · Rooted in community · St Helens, UK</div>
+  <div class="stats-grid">
+    <div class="stat-card p"><div class="stat-num" id="statTotal">0</div><div class="stat-label">Total Projects</div></div>
+    <div class="stat-card m"><div class="stat-num" id="statActive">0</div><div class="stat-label">Active</div></div>
+    <div class="stat-card y"><div class="stat-num" id="statDone">0</div><div class="stat-label">Completed</div></div>
+    <div class="stat-card b"><div class="stat-num" id="statBlocked">0</div><div class="stat-label">Need Attention</div></div>
+  </div>
+</section>
+
+<div class="tabs">
+  <button class="tab active" data-tab="projects">◆ Projects</button>
+  <button class="tab" data-tab="dashboard">◇ Dashboard</button>
+  <button class="tab" data-tab="activity">◈ Activity <span class="tab-badge" id="tabBadge" style="display:none">0</span></button>
+</div>
+
+<main class="main">
+  <div class="tab-panel active" id="panel-projects">
+    <div class="filter-bar">
+      <input type="text" class="search-input" id="searchInput" placeholder="Search wonderful projects...">
+      <button class="filter-chip active" data-filter="all">All</button>
+      <button class="filter-chip" data-filter="active">Active</button>
+      <button class="filter-chip" data-filter="done">Completed</button>
+      <button class="filter-chip" data-filter="blocked">Blocked</button>
+    </div>
+    <div id="projectsContainer"></div>
+  </div>
+  <div class="tab-panel" id="panel-dashboard">
+    <div class="dashboard-grid">
+      <div class="dash-card"><div class="dash-card-title">◈ Status Breakdown</div><div class="status-breakdown" id="statusBreakdown"></div></div>
+      <div class="dash-card"><div class="dash-card-title">◈ Upcoming Deadlines</div><div class="upcoming-list" id="upcomingList"></div></div>
+      <div class="dash-card"><div class="dash-card-title">◈ By Category</div><div class="status-breakdown" id="categoryBreakdown"></div></div>
+      <div class="dash-card"><div class="dash-card-title">◈ Team Activity</div><div class="status-breakdown" id="teamBreakdown"></div></div>
+    </div>
+  </div>
+  <div class="tab-panel" id="panel-activity">
+    <div class="filter-bar"><button class="btn btn-ghost btn-small" onclick="markAllRead()">✓ Mark all read</button></div>
+    <div class="activity-list" id="activityList"></div>
+  </div>
+</main>
+
+<button class="fab" onclick="openProjectModal()" title="New project">+</button>
+
+<div class="modal-backdrop" id="projectModal">
+  <div class="modal">
+    <h2 id="modalTitle">New <span class="accent">project</span></h2>
+    <div class="modal-sub">A new wonderful thing to track.</div>
+    <div class="form-group"><label>Project title</label><input type="text" id="pTitle" placeholder="e.g. Young Creatives Summer Programme"></div>
+    <div class="form-group"><label>Category</label>
+      <select id="pCategory">
+        <option value="">Choose a category...</option>
+        <option value="Participation">Participation</option>
+        <option value="Young People">Young People</option>
+        <option value="Family">Family</option>
+        <option value="Festival">Festival</option>
+        <option value="Workshop">Workshop</option>
+        <option value="Community">Community</option>
+        <option value="Artist Development">Artist Development</option>
+        <option value="Fundraising">Fundraising</option>
+        <option value="Other">Other</option>
+      </select>
+    </div>
+    <div class="form-group"><label>Description</label><textarea id="pDescription" placeholder="What's this wonderful project about?"></textarea></div>
+    <div class="form-row">
+      <div class="form-group"><label>Start date</label><input type="date" id="pStart"></div>
+      <div class="form-group"><label>End date</label><input type="date" id="pEnd"></div>
+    </div>
+    <div class="form-group"><label>Lead</label><input type="text" id="pLead" placeholder="Who's leading this?"></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeProjectModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveProject()">Save Project</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="subtaskModal">
+  <div class="modal">
+    <h2>Add <span class="accent">sub-task</span></h2>
+    <div class="modal-sub">Break it down into wonderful pieces.</div>
+    <div class="form-group"><label>Title</label><input type="text" id="sTitle" placeholder="e.g. Book venue, Recruit artists..."></div>
+    <div class="form-row">
+      <div class="form-group"><label>Start date</label><input type="date" id="sStart"></div>
+      <div class="form-group"><label>Due date</label><input type="date" id="sEnd"></div>
+    </div>
+    <div class="form-group"><label>Assigned to</label><input type="text" id="sAssignee" placeholder="Who owns this?"></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeSubtaskModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveSubtask()">Add sub-task</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="attachmentModal">
+  <div class="modal">
+    <h2>Add <span class="accent">attachment</span></h2>
+    <div class="modal-sub">Photos from the project.</div>
+    <div class="form-tabs">
+      <button class="form-tab active" onclick="switchAttachTab('url', this)">Image URL</button>
+      <button class="form-tab" onclick="switchAttachTab('upload', this)">Upload file</button>
+    </div>
+    <div id="attachUrlPanel">
+      <div class="form-group"><label>Image URL</label><input type="url" id="aUrl" placeholder="https://... (Google Drive share link, Dropbox, etc.)"></div>
+      <div class="form-group"><label>Caption (optional)</label><input type="text" id="aLabelUrl" placeholder="e.g. Workshop at the library"></div>
+    </div>
+    <div id="attachUploadPanel" style="display:none;">
+      <div class="form-group"><label>Choose image (keep under 1MB for best speed)</label><input type="file" id="aFile" accept="image/*"></div>
+      <div class="form-group"><label>Caption (optional)</label><input type="text" id="aLabelFile" placeholder="e.g. Workshop at the library"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeAttachmentModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveAttachment()">Add</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast">✓ Saved</div>
+</div>
+
+<!-- Firebase + app -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
+import { getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot, serverTimestamp, addDoc, query, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDo4bzxx4E8PGaM8tG6tZsfeyiGAgX2Ojo",
+  authDomain: "wonderarts-project-tracker.firebaseapp.com",
+  projectId: "wonderarts-project-tracker",
+  storageBucket: "wonderarts-project-tracker.firebasestorage.app",
+  messagingSenderId: "26855897388",
+  appId: "1:26855897388:web:e4c980110196c096dfd489"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// App state
+let projects = [];
+let activity = [];
+let editingProjectId = null;
+let currentSubtaskProjectId = null;
+let currentAttachmentProjectId = null;
+let attachTabMode = 'url';
+let currentFilter = 'all';
+let searchQuery = '';
+let lastSeenActivityTime = parseInt(localStorage.getItem('wa-lastseen') || '0');
+
+const statusCycle = ['not', 'progress', 'review', 'done', 'blocked'];
+const statusLabels = { not: 'Not started', progress: 'In progress', review: 'In review', done: 'Completed', blocked: 'Blocked' };
+const statusColors = { not: 'rgba(136,218,192,0.3)', progress: '#fbe63f', review: '#88dac0', done: '#5fc4a3', blocked: '#e42c72' };
+
+// Sync status helpers
+function setSyncStatus(state, text) {
+  const el = document.getElementById('syncStatus');
+  el.className = 'sync-status ' + state;
+  document.getElementById('syncText').textContent = text;
+}
+
+// User handling
+document.getElementById('userName').value = localStorage.getItem('wa-user') || '';
+document.getElementById('userName').addEventListener('blur', () => {
+  localStorage.setItem('wa-user', document.getElementById('userName').value);
+});
+function getUser() { return document.getElementById('userName').value.trim() || 'Someone'; }
+
+// ============ FIREBASE SYNC ============
+
+// Listen for real-time project updates
+function startListeners() {
+  setSyncStatus('syncing', 'Syncing...');
+  document.getElementById('loadingStatus').textContent = 'Loading projects...';
+
+  onSnapshot(collection(db, 'projects'), (snap) => {
+    projects = [];
+    snap.forEach(d => projects.push({ id: d.id, ...d.data() }));
+    renderAll();
+    setSyncStatus('', 'Live · synced');
+    hideLoading();
+  }, (err) => {
+    console.error('Projects listener error:', err);
+    setSyncStatus('offline', 'Connection issue');
+    hideLoading();
+    alert('Couldn\'t connect to Firebase. Check your internet and try refreshing. If this keeps happening, make sure your Firebase security rules allow read/write.');
+  });
+
+  // Listen to activity (last 100 items)
+  const activityQ = query(collection(db, 'activity'), orderBy('timestamp', 'desc'), limit(100));
+  onSnapshot(activityQ, (snap) => {
+    activity = [];
+    snap.forEach(d => activity.push({ id: d.id, ...d.data() }));
+    renderActivity();
+    renderUnreadBadge();
+    renderDashboard();
+  });
+}
+
+function hideLoading() {
+  setTimeout(() => {
+    document.getElementById('loadingScreen').classList.add('hide');
+    setTimeout(() => document.getElementById('loadingScreen').style.display = 'none', 500);
+  }, 300);
+}
+
+async function saveProjectDoc(project) {
+  try {
+    const { id, ...data } = project;
+    await setDoc(doc(db, 'projects', id), data);
+    showToast('Saved');
+  } catch (e) {
+    console.error('Save failed:', e);
+    showToast('Save failed');
+  }
+}
+
+async function deleteProjectDoc(id) {
+  try { await deleteDoc(doc(db, 'projects', id)); } catch (e) { console.error(e); }
+}
+
+async function logActivity(action, target, projectId) {
+  try {
+    await addDoc(collection(db, 'activity'), {
+      actor: getUser(),
+      action, target, projectId: projectId || '',
+      timestamp: Date.now()
+    });
+  } catch (e) { console.error('Activity log failed:', e); }
+}
+
+// ============ PROJECT CRUD ============
+
+window.openProjectModal = function() {
+  editingProjectId = null;
+  document.getElementById('modalTitle').innerHTML = 'New <span class="accent">project</span>';
+  ['pTitle','pDescription','pStart','pEnd','pLead'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('pCategory').value = '';
+  document.getElementById('pStart').value = new Date().toISOString().split('T')[0];
+  document.getElementById('projectModal').classList.add('show');
+};
+
+window.closeProjectModal = function() { document.getElementById('projectModal').classList.remove('show'); };
+
+window.saveProject = async function() {
+  const title = document.getElementById('pTitle').value.trim();
+  if (!title) { alert('Please give the project a title.'); return; }
+  const data = {
+    title,
+    category: document.getElementById('pCategory').value,
+    description: document.getElementById('pDescription').value.trim(),
+    start: document.getElementById('pStart').value,
+    end: document.getElementById('pEnd').value,
+    lead: document.getElementById('pLead').value.trim()
+  };
+  if (editingProjectId) {
+    const p = projects.find(x => x.id === editingProjectId);
+    Object.assign(p, data);
+    await saveProjectDoc(p);
+    logActivity('updated project details for', title, p.id);
+  } else {
+    const newP = {
+      id: 'p_' + Date.now() + '_' + Math.random().toString(36).slice(2,7),
+      ...data, subtasks: [], attachments: [],
+      notes: '', notesUpdatedBy: '', notesUpdatedAt: '',
+      expanded: true, createdAt: new Date().toISOString(), createdBy: getUser()
+    };
+    await saveProjectDoc(newP);
+    logActivity('created a new project', title, newP.id);
+  }
+  closeProjectModal();
+};
+
+window.deleteProject = async function(id) {
+  if (!confirm('Delete this project? This cannot be undone.')) return;
+  const p = projects.find(x => x.id === id);
+  await deleteProjectDoc(id);
+  logActivity('deleted project', p.title, id);
+};
+
+window.editProject = function(id) {
+  const p = projects.find(x => x.id === id);
+  if (!p) return;
+  editingProjectId = id;
+  document.getElementById('modalTitle').innerHTML = 'Edit <span class="accent">project</span>';
+  document.getElementById('pTitle').value = p.title;
+  document.getElementById('pCategory').value = p.category || '';
+  document.getElementById('pDescription').value = p.description || '';
+  document.getElementById('pStart').value = p.start || '';
+  document.getElementById('pEnd').value = p.end || '';
+  document.getElementById('pLead').value = p.lead || '';
+  document.getElementById('projectModal').classList.add('show');
+};
+
+window.toggleExpand = async function(id) {
+  const p = projects.find(x => x.id === id);
+  p.expanded = !p.expanded;
+  // Expand state is local-only; don't save to Firebase to avoid "other person expanded your card" weirdness
+  renderProjects();
+};
+
+// ============ SUBTASK CRUD ============
+
+window.openSubtaskModal = function(projectId) {
+  currentSubtaskProjectId = projectId;
+  ['sTitle','sStart','sEnd','sAssignee'].forEach(id => document.getElementById(id).value = '');
+  const u = getUser(); if (u !== 'Someone') document.getElementById('sAssignee').value = u;
+  document.getElementById('subtaskModal').classList.add('show');
+};
+
+window.closeSubtaskModal = function() { document.getElementById('subtaskModal').classList.remove('show'); };
+
+window.saveSubtask = async function() {
+  const title = document.getElementById('sTitle').value.trim();
+  if (!title) { alert('Please give the sub-task a title.'); return; }
+  const project = projects.find(p => p.id === currentSubtaskProjectId);
+  if (!project.subtasks) project.subtasks = [];
+  project.subtasks.push({
+    id: 's_' + Date.now() + '_' + Math.random().toString(36).slice(2,7),
+    title,
+    start: document.getElementById('sStart').value,
+    end: document.getElementById('sEnd').value,
+    assignee: document.getElementById('sAssignee').value.trim(),
+    status: 'not'
+  });
+  await saveProjectDoc(project);
+  logActivity('added a sub-task to', project.title, project.id);
+  closeSubtaskModal();
+};
+
+window.cycleSubtaskStatus = async function(projectId, subtaskId) {
+  const project = projects.find(p => p.id === projectId);
+  const subtask = project.subtasks.find(s => s.id === subtaskId);
+  const idx = statusCycle.indexOf(subtask.status);
+  subtask.status = statusCycle[(idx + 1) % statusCycle.length];
+  await saveProjectDoc(project);
+  logActivity(`marked "${subtask.title}" as ${statusLabels[subtask.status].toLowerCase()} in`, project.title, project.id);
+};
+
+window.toggleSubtaskDone = async function(projectId, subtaskId) {
+  const project = projects.find(p => p.id === projectId);
+  const subtask = project.subtasks.find(s => s.id === subtaskId);
+  const wasDone = subtask.status === 'done';
+  subtask.status = wasDone ? 'not' : 'done';
+  await saveProjectDoc(project);
+  logActivity(wasDone ? `reopened "${subtask.title}" in` : `completed "${subtask.title}" in`, project.title, project.id);
+};
+
+window.deleteSubtask = async function(projectId, subtaskId) {
+  const project = projects.find(p => p.id === projectId);
+  const st = project.subtasks.find(s => s.id === subtaskId);
+  project.subtasks = project.subtasks.filter(s => s.id !== subtaskId);
+  await saveProjectDoc(project);
+  logActivity(`removed "${st.title}" from`, project.title, project.id);
+};
+
+// ============ NOTES ============
+
+let notesSaveTimers = {};
+window.saveNotes = async function(projectId, value) {
+  const project = projects.find(p => p.id === projectId);
+  if (!project || project.notes === value) return;
+  clearTimeout(notesSaveTimers[projectId]);
+  notesSaveTimers[projectId] = setTimeout(async () => {
+    project.notes = value;
+    project.notesUpdatedBy = getUser();
+    project.notesUpdatedAt = new Date().toISOString();
+    await saveProjectDoc(project);
+    logActivity('updated the notes for', project.title, project.id);
+  }, 500);
+};
+
+// ============ ATTACHMENTS ============
+
+window.openAttachmentModal = function(projectId) {
+  currentAttachmentProjectId = projectId;
+  document.getElementById('aUrl').value = '';
+  document.getElementById('aLabelUrl').value = '';
+  document.getElementById('aFile').value = '';
+  document.getElementById('aLabelFile').value = '';
+  attachTabMode = 'url';
+  document.getElementById('attachUrlPanel').style.display = 'block';
+  document.getElementById('attachUploadPanel').style.display = 'none';
+  document.querySelectorAll('.form-tab').forEach((t, i) => t.classList.toggle('active', i === 0));
+  document.getElementById('attachmentModal').classList.add('show');
+};
+
+window.closeAttachmentModal = function() { document.getElementById('attachmentModal').classList.remove('show'); };
+
+window.switchAttachTab = function(mode, btn) {
+  attachTabMode = mode;
+  document.getElementById('attachUrlPanel').style.display = mode === 'url' ? 'block' : 'none';
+  document.getElementById('attachUploadPanel').style.display = mode === 'upload' ? 'block' : 'none';
+  document.querySelectorAll('.form-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+};
+
+window.saveAttachment = async function() {
+  const project = projects.find(p => p.id === currentAttachmentProjectId);
+  if (!project.attachments) project.attachments = [];
+
+  if (attachTabMode === 'url') {
+    let url = document.getElementById('aUrl').value.trim();
+    if (!url) { alert('Please paste an image URL.'); return; }
+    const driveMatch = url.match(/drive\.google\.com\/file\/d\/([^\/]+)/);
+    if (driveMatch) url = `https://drive.google.com/uc?export=view&id=${driveMatch[1]}`;
+    project.attachments.push({
+      id: 'att_' + Date.now(), type: 'url', src: url,
+      label: document.getElementById('aLabelUrl').value.trim(),
+      addedBy: getUser(), addedAt: new Date().toISOString()
+    });
+    await saveProjectDoc(project);
+    logActivity('added a photo to', project.title, project.id);
+    closeAttachmentModal();
+  } else {
+    const file = document.getElementById('aFile').files[0];
+    if (!file) { alert('Please choose a file.'); return; }
+    if (file.size > 900 * 1024) {
+      alert('File is too large. Firebase limits documents to 1MB total. Please use an image under 900KB, or use the Image URL option instead.');
+      return;
+    }
+    const label = document.getElementById('aLabelFile').value.trim();
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      project.attachments.push({
+        id: 'att_' + Date.now(), type: 'embedded', src: e.target.result,
+        label, fileName: file.name, addedBy: getUser(), addedAt: new Date().toISOString()
+      });
+      try {
+        await saveProjectDoc(project);
+        logActivity('added a photo to', project.title, project.id);
+        closeAttachmentModal();
+      } catch (err) {
+        alert('Could not save — the project may have too many attached photos. Try using image URLs instead of uploads for larger photo collections.');
+      }
+    };
+    reader.readAsDataURL(file);
+  }
+};
+
+window.deleteAttachment = async function(projectId, attId, e) {
+  e.stopPropagation();
+  if (!confirm('Remove this photo?')) return;
+  const project = projects.find(p => p.id === projectId);
+  project.attachments = project.attachments.filter(a => a.id !== attId);
+  await saveProjectDoc(project);
+};
+
+window.viewAttachment = function(src) { window.open(src, '_blank'); };
+
+// ============ ACTIVITY ============
+
+window.showActivity = function() { switchTab('activity'); };
+
+window.markAllRead = function() {
+  lastSeenActivityTime = Date.now();
+  localStorage.setItem('wa-lastseen', String(lastSeenActivityTime));
+  renderAll();
+};
+
+function unreadActivityCount() {
+  const me = getUser();
+  return activity.filter(a => a.timestamp > lastSeenActivityTime && a.actor !== me).length;
+}
+
+function renderUnreadBadge() {
+  const count = unreadActivityCount();
+  const badge = document.getElementById('unreadBadge');
+  const tabBadge = document.getElementById('tabBadge');
+  if (count > 0) {
+    badge.textContent = count > 99 ? '99+' : count;
+    badge.style.display = 'flex';
+    tabBadge.textContent = count;
+    tabBadge.style.display = 'inline';
+  } else {
+    badge.style.display = 'none';
+    tabBadge.style.display = 'none';
+  }
+}
+
+function renderActivity() {
+  const list = document.getElementById('activityList');
+  if (!activity.length) {
+    list.innerHTML = '<div class="empty-state"><div class="empty-state-icon">✨</div><h2>No activity yet</h2><p>Changes to projects will show up here.</p></div>';
+    return;
+  }
+  const me = getUser();
+  list.innerHTML = activity.map(a => {
+    const unread = a.timestamp > lastSeenActivityTime && a.actor !== me;
+    const initials = a.actor.split(' ').map(s => s[0]).join('').slice(0, 2).toUpperCase();
+    return `<div class="activity-item ${unread ? 'unread' : ''}">
+      <div class="activity-avatar">${escapeHtml(initials || '?')}</div>
+      <div class="activity-content">
+        <span class="activity-actor">${escapeHtml(a.actor)}</span>
+        <span class="activity-action"> ${escapeHtml(a.action)} </span>
+        <span class="activity-target">${escapeHtml(a.target)}</span>
+      </div>
+      ${unread ? '<div class="activity-unread-dot"></div>' : `<div class="activity-time">${formatTimeAgo(a.timestamp)}</div>`}
+    </div>`;
+  }).join('');
+}
+
+// ============ HELPERS ============
+
+function calcProgress(project) {
+  if (!project.subtasks || !project.subtasks.length) return 0;
+  const done = project.subtasks.filter(s => s.status === 'done').length;
+  return Math.round((done / project.subtasks.length) * 100);
+}
+
+function formatDate(d) {
+  if (!d) return '—';
+  return new Date(d).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+}
+
+function formatTimeAgo(ts) {
+  const diff = Date.now() - ts;
+  const mins = Math.floor(diff / 60000);
+  if (mins < 1) return 'just now';
+  if (mins < 60) return mins + ' min ago';
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return hrs + ' hr ago';
+  const days = Math.floor(hrs / 24);
+  if (days < 7) return days + ' day' + (days > 1 ? 's' : '') + ' ago';
+  return new Date(ts).toLocaleDateString('en-GB');
+}
+
+function escapeHtml(s) {
+  if (s === null || s === undefined) return '';
+  return String(s).replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
+}
+
+function showToast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = '✓ ' + msg;
+  el.classList.add('show');
+  clearTimeout(window._toastTimer);
+  window._toastTimer = setTimeout(() => el.classList.remove('show'), 1500);
+}
+
+// ============ RENDERING ============
+
+function renderTimeline(project) {
+  let minDate = project.start ? new Date(project.start) : null;
+  let maxDate = project.end ? new Date(project.end) : null;
+  const subs = project.subtasks || [];
+  subs.forEach(s => {
+    if (s.start) { const d = new Date(s.start); if (!minDate || d < minDate) minDate = d; }
+    if (s.end) { const d = new Date(s.end); if (!maxDate || d > maxDate) maxDate = d; }
+  });
+  if (!minDate || !maxDate) return '<div class="timeline-empty">Add dates to see the timeline come to life.</div>';
+  minDate = new Date(minDate.getTime() - 3 * 86400000);
+  maxDate = new Date(maxDate.getTime() + 3 * 86400000);
+  const totalMs = maxDate - minDate;
+  if (totalMs <= 0) return '';
+  const months = [];
+  const cur = new Date(minDate.getFullYear(), minDate.getMonth(), 1);
+  while (cur <= maxDate) { months.push(new Date(cur)); cur.setMonth(cur.getMonth() + 1); }
+  const today = new Date();
+  const todayInRange = today >= minDate && today <= maxDate;
+  const todayPct = todayInRange ? ((today - minDate) / totalMs) * 100 : null;
+  const monthsHTML = months.map(m => `<div class="timeline-month">${m.toLocaleDateString('en-GB', { month: 'short', year: '2-digit' })}</div>`).join('');
+  const tracks = [];
+  if (project.start && project.end) {
+    const s = new Date(project.start); const e = new Date(project.end);
+    const left = ((s - minDate) / totalMs) * 100;
+    const width = ((e - s) / totalMs) * 100;
+    const cls = subs.length && calcProgress(project) === 100 ? 's-done' : 's-progress';
+    tracks.push(`<div class="timeline-track"><div class="timeline-bar ${cls}" style="left: ${left}%; width: ${Math.max(width, 2)}%;" title="${escapeHtml(project.title)}: ${formatDate(project.start)} — ${formatDate(project.end)}">◆ ${escapeHtml(project.title)}</div></div>`);
+  }
+  subs.forEach(st => {
+    if (!st.start || !st.end) return;
+    const s = new Date(st.start); const e = new Date(st.end);
+    const left = ((s - minDate) / totalMs) * 100;
+    const width = ((e - s) / totalMs) * 100;
+    tracks.push(`<div class="timeline-track"><div class="timeline-bar s-${st.status}" style="left: ${left}%; width: ${Math.max(width, 2)}%;" title="${escapeHtml(st.title)}: ${formatDate(st.start)} — ${formatDate(st.end)}">${escapeHtml(st.title)}</div></div>`);
+  });
+  if (!tracks.length) tracks.push('<div class="timeline-empty">Add dates to sub-tasks to see them on the timeline.</div>');
+  return `<div class="timeline"><div class="timeline-scale">${monthsHTML}</div><div class="timeline-tracks">${todayPct !== null ? `<div class="timeline-today" style="left: ${todayPct}%;"></div>` : ''}${tracks.join('')}</div></div>`;
+}
+
+function renderSubtasks(project) {
+  const subs = project.subtasks || [];
+  if (!subs.length) return '<div class="empty-subtasks">No sub-tasks yet — add one to break this down.</div>';
+  return subs.map(st => `<div class="subtask s-${st.status}">
+    <div class="subtask-check" onclick="toggleSubtaskDone('${project.id}', '${st.id}')">${st.status === 'done' ? '✓' : ''}</div>
+    <div class="subtask-title">${escapeHtml(st.title)}</div>
+    <div class="subtask-assignee">${escapeHtml(st.assignee || 'Unassigned')}</div>
+    <div class="subtask-dates">${st.start ? formatDate(st.start) : '—'} → ${st.end ? formatDate(st.end) : '—'}</div>
+    <button class="subtask-status" onclick="cycleSubtaskStatus('${project.id}', '${st.id}')">${statusLabels[st.status]}</button>
+  </div>`).join('');
+}
+
+function renderAttachments(project) {
+  const atts = project.attachments || [];
+  const items = atts.map(a => `<div class="attachment" onclick="viewAttachment('${a.src}')">
+    <img src="${a.src}" alt="${escapeHtml(a.label || '')}" onerror="this.style.opacity=0.2;this.alt='Image unavailable';">
+    ${a.label ? `<div class="attachment-label">${escapeHtml(a.label)}</div>` : ''}
+    <button class="attachment-delete" onclick="deleteAttachment('${project.id}', '${a.id}', event)">×</button>
+  </div>`).join('');
+  return `<div class="attachments">${items}<button class="add-attachment" onclick="openAttachmentModal('${project.id}')"><span>+</span><span>Add photo</span></button></div>`;
+}
+
+function renderProjectCard(p) {
+  const progress = calcProgress(p);
+  const circumference = 2 * Math.PI * 22;
+  const offset = circumference - (progress / 100) * circumference;
+  const progressColor = progress === 100 ? '#5fc4a3' : progress > 0 ? '#fbe63f' : 'rgba(136,218,192,0.4)';
+  const notesMeta = p.notesUpdatedAt ? `Last updated by ${escapeHtml(p.notesUpdatedBy)} · ${formatTimeAgo(new Date(p.notesUpdatedAt).getTime())}` : 'Share status updates, blockers, wins, next steps...';
+  const attCount = (p.attachments || []).length;
+  const subs = p.subtasks || [];
+  const subtaskDone = subs.filter(s => s.status === 'done').length;
+  return `<div class="project ${p.expanded ? 'expanded' : ''}" data-id="${p.id}">
+    <div class="project-header" onclick="toggleExpand('${p.id}')">
+      <div class="project-chevron">›</div>
+      <div class="project-info">
+        <div class="project-title">${escapeHtml(p.title)}</div>
+        <div class="project-meta">
+          ${p.category ? `<span class="category-pill">${escapeHtml(p.category)}</span>` : ''}
+          ${p.lead ? `<span>◐ ${escapeHtml(p.lead)}</span>` : ''}
+          ${p.end ? `<span>■ ${formatDate(p.end)}</span>` : ''}
+          <span>◆ ${subtaskDone}/${subs.length} tasks</span>
+          ${attCount ? `<span>◈ ${attCount} photo${attCount > 1 ? 's' : ''}</span>` : ''}
+        </div>
+      </div>
+      <div class="progress-ring" onclick="event.stopPropagation();">
+        <svg width="52" height="52">
+          <circle class="progress-ring-bg" cx="26" cy="26" r="22"></circle>
+          <circle class="progress-ring-fill" cx="26" cy="26" r="22" stroke="${progressColor}" stroke-dasharray="${circumference}" stroke-dashoffset="${offset}"></circle>
+        </svg>
+        <div class="progress-ring-text">${progress}%</div>
+      </div>
+    </div>
+    <div class="project-body">
+      <div class="project-body-inner">
+        ${p.description ? `<div class="project-desc">${escapeHtml(p.description)}</div>` : ''}
+        <div class="section-heading">◈ Timeline</div>
+        ${renderTimeline(p)}
+        <div class="section-heading">◈ Sub-tasks <button class="btn btn-mint btn-small" onclick="openSubtaskModal('${p.id}')">+ Add</button></div>
+        <div class="subtasks">${renderSubtasks(p)}</div>
+        <div class="section-heading">◈ Photos</div>
+        ${renderAttachments(p)}
+        <div class="section-heading">◈ Shared notes</div>
+        <div class="notes-area">
+          <textarea class="notes-textarea" placeholder="Share where you're at..." oninput="saveNotes('${p.id}', this.value)">${escapeHtml(p.notes || '')}</textarea>
+          <div class="notes-meta">${notesMeta}</div>
+        </div>
+        <div class="project-footer-actions">
+          <button class="btn btn-ghost btn-small" onclick="editProject('${p.id}')">Edit details</button>
+          <button class="btn btn-danger btn-small" onclick="deleteProject('${p.id}')">Delete</button>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderStats() {
+  const total = projects.length;
+  const done = projects.filter(p => calcProgress(p) === 100 && (p.subtasks || []).length > 0).length;
+  const blocked = projects.filter(p => (p.subtasks || []).some(s => s.status === 'blocked')).length;
+  const active = total - done;
+  document.getElementById('statTotal').textContent = total;
+  document.getElementById('statActive').textContent = active;
+  document.getElementById('statDone').textContent = done;
+  document.getElementById('statBlocked').textContent = blocked;
+}
+
+function renderProjects() {
+  const container = document.getElementById('projectsContainer');
+  let filtered = [...projects];
+  if (searchQuery) {
+    const q = searchQuery.toLowerCase();
+    filtered = filtered.filter(p =>
+      p.title.toLowerCase().includes(q) ||
+      (p.description || '').toLowerCase().includes(q) ||
+      (p.category || '').toLowerCase().includes(q) ||
+      (p.lead || '').toLowerCase().includes(q) ||
+      (p.subtasks || []).some(s => s.title.toLowerCase().includes(q))
+    );
+  }
+  if (currentFilter === 'active') filtered = filtered.filter(p => !(calcProgress(p) === 100 && (p.subtasks || []).length > 0));
+  else if (currentFilter === 'done') filtered = filtered.filter(p => calcProgress(p) === 100 && (p.subtasks || []).length > 0);
+  else if (currentFilter === 'blocked') filtered = filtered.filter(p => (p.subtasks || []).some(s => s.status === 'blocked'));
+
+  if (!filtered.length) {
+    container.innerHTML = !projects.length
+      ? `<div class="empty-state"><div class="empty-state-icon">✨</div><h2>No <span class="accent">wonderful</span> projects yet</h2><p>Tap the pink + to add your first one.</p><button class="btn btn-primary" onclick="openProjectModal()">+ Create a project</button></div>`
+      : `<div class="empty-state"><div class="empty-state-icon">◇</div><h2>No matches</h2><p>Try a different search or filter.</p></div>`;
+    return;
+  }
+  filtered.sort((a, b) => {
+    const ap = calcProgress(a), bp = calcProgress(b);
+    if (ap === 100 && bp !== 100) return 1;
+    if (bp === 100 && ap !== 100) return -1;
+    return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
+  });
+  container.innerHTML = filtered.map(renderProjectCard).join('');
+}
+
+function renderDashboard() {
+  const statusCounts = { not: 0, progress: 0, review: 0, done: 0, blocked: 0 };
+  let totalTasks = 0;
+  projects.forEach(p => (p.subtasks || []).forEach(s => { statusCounts[s.status]++; totalTasks++; }));
+  document.getElementById('statusBreakdown').innerHTML = statusCycle.map(status => {
+    const count = statusCounts[status];
+    const pct = totalTasks ? (count / totalTasks) * 100 : 0;
+    return `<div class="status-row">
+      <div class="status-row-label" style="color: ${statusColors[status]}">${statusLabels[status]}</div>
+      <div class="status-row-bar"><div class="status-row-fill" style="width: ${pct}%; background: ${statusColors[status]};"></div></div>
+      <div class="status-row-count">${count}</div>
+    </div>`;
+  }).join('') || '<div class="empty-subtasks">No sub-tasks yet.</div>';
+
+  const upcoming = [];
+  const now = new Date();
+  projects.forEach(p => (p.subtasks || []).forEach(s => {
+    if (s.end && s.status !== 'done') upcoming.push({ project: p.title, title: s.title, end: new Date(s.end), assignee: s.assignee });
+  }));
+  upcoming.sort((a, b) => a.end - b.end);
+  document.getElementById('upcomingList').innerHTML = upcoming.slice(0, 6).map(u => {
+    const overdue = u.end < now;
+    const soon = !overdue && (u.end - now) < 7 * 86400000;
+    return `<div class="upcoming-item ${overdue ? 'overdue' : soon ? 'soon' : ''}">
+      <div class="upcoming-title">${escapeHtml(u.title)}</div>
+      <div class="upcoming-meta">${escapeHtml(u.project)} · ${overdue ? 'Overdue · ' : ''}${formatDate(u.end)}${u.assignee ? ' · ' + escapeHtml(u.assignee) : ''}</div>
+    </div>`;
+  }).join('') || '<div class="empty-subtasks">Nothing on the horizon.</div>';
+
+  const catCounts = {};
+  projects.forEach(p => { const c = p.category || 'Other'; catCounts[c] = (catCounts[c] || 0) + 1; });
+  const maxCat = Math.max(1, ...Object.values(catCounts));
+  document.getElementById('categoryBreakdown').innerHTML = Object.entries(catCounts).sort((a, b) => b[1] - a[1]).map(([cat, count]) =>
+    `<div class="status-row"><div class="status-row-label" style="color: #fbe63f">${escapeHtml(cat)}</div><div class="status-row-bar"><div class="status-row-fill" style="width: ${(count / maxCat) * 100}%; background: #fbe63f;"></div></div><div class="status-row-count">${count}</div></div>`
+  ).join('') || '<div class="empty-subtasks">No projects yet.</div>';
+
+  const actorCounts = {};
+  activity.slice(0, 30).forEach(a => { actorCounts[a.actor] = (actorCounts[a.actor] || 0) + 1; });
+  const maxActor = Math.max(1, ...Object.values(actorCounts));
+  document.getElementById('teamBreakdown').innerHTML = Object.entries(actorCounts).sort((a, b) => b[1] - a[1]).slice(0, 5).map(([name, count]) =>
+    `<div class="status-row"><div class="status-row-label" style="color: #88dac0">${escapeHtml(name)}</div><div class="status-row-bar"><div class="status-row-fill" style="width: ${(count / maxActor) * 100}%; background: #88dac0;"></div></div><div class="status-row-count">${count}</div></div>`
+  ).join('') || '<div class="empty-subtasks">No recent activity.</div>';
+}
+
+function renderAll() {
+  renderStats();
+  renderProjects();
+  renderDashboard();
+  renderUnreadBadge();
+}
+
+// ============ TABS / FILTERS / SEARCH ============
+
+function switchTab(tabName) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tabName));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.id === 'panel-' + tabName));
+  if (tabName === 'activity') {
+    lastSeenActivityTime = Date.now();
+    localStorage.setItem('wa-lastseen', String(lastSeenActivityTime));
+    renderUnreadBadge();
+    renderActivity();
+  }
+}
+window.switchTab = switchTab;
+
+document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => switchTab(t.dataset.tab)));
+document.querySelectorAll('.filter-chip').forEach(c => {
+  c.addEventListener('click', () => {
+    document.querySelectorAll('.filter-chip').forEach(x => x.classList.remove('active'));
+    c.classList.add('active');
+    currentFilter = c.dataset.filter;
+    renderProjects();
+  });
+});
+document.getElementById('searchInput').addEventListener('input', e => { searchQuery = e.target.value; renderProjects(); });
+
+// ============ PDF ============
+
+window.exportPDF = function() {
+  projects.forEach(p => p.expanded = true);
+  renderProjects();
+  setTimeout(() => window.print(), 300);
+};
+
+// Modal backdrop clicks
+document.querySelectorAll('.modal-backdrop').forEach(el => {
+  el.addEventListener('click', e => { if (e.target === el) el.classList.remove('show'); });
+});
+
+// Safety timeout — hide loader even if Firebase never responds
+setTimeout(() => {
+  if (document.getElementById('loadingScreen').style.display !== 'none') {
+    document.getElementById('loadingStatus').textContent = 'Still connecting...';
+    setTimeout(hideLoading, 3000);
+  }
+}, 5000);
+
+// Boot
+startListeners();
+</script>
+
+</body>
+</html>
